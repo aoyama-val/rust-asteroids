@@ -36,7 +36,7 @@ impl Player {
     }
 
     pub fn up(&mut self) {
-        self.velocity = 1.0;
+        self.velocity = 2.0;
     }
 
     pub fn rotate(&mut self, degree: f32) {
@@ -267,7 +267,7 @@ impl Game {
             return;
         }
 
-        let v = 4.0;
+        let v = 12.0;
         let rot = self.player.rot;
         let vx = v * f32::cos(deg2rad(rot));
         let vy = v * f32::sin(deg2rad(rot)) * -1.0;
