@@ -116,10 +116,7 @@ fn init_mixer() {
         chunk_size,
     )
     .expect("cannot open audio");
-    let _mixer_context = mixer::init(
-        mixer::InitFlag::MP3 | mixer::InitFlag::FLAC | mixer::InitFlag::MOD | mixer::InitFlag::OGG,
-    )
-    .expect("cannot init mixer");
+    let _mixer_context = mixer::init(mixer::InitFlag::MP3).expect("cannot init mixer");
 }
 
 fn load_resources<'a>(
@@ -180,7 +177,7 @@ fn load_resources<'a>(
         resources.images.insert(path.to_string(), image);
     }
 
-    let sound_paths = ["crash.wav", "shoot.wav"];
+    let sound_paths = ["crash.wav", "hit.mp3", "shoot.wav"];
     for path in sound_paths {
         let full_path = "resources/sound/".to_string() + path;
         let chunk =
@@ -289,8 +286,13 @@ fn render_number(
 
 fn play_sounds(game: &mut Game, resources: &Resources) {
     for sound_key in &game.requested_sounds {
-        let chunk = resources.chunks.get(&sound_key.to_string()).unwrap();
-        sdl2::mixer::Channel::all().play(&chunk, 0).unwrap();
+        let chunk = resources
+            .chunks
+            .get(&sound_key.to_string())
+            .expect("cannot get sound");
+        sdl2::mixer::Channel::all()
+            .play(&chunk, 0)
+            .expect("cannot play sound");
     }
     game.requested_sounds = Vec::new();
 }
