@@ -1,5 +1,6 @@
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
+use sdl2::mixer;
 use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::{BlendMode, Canvas, Texture, TextureCreator};
@@ -20,6 +21,7 @@ struct Image<'a> {
 
 struct Resources<'a> {
     images: HashMap<String, Image<'a>>,
+    chunks: HashMap<String, sdl2::mixer::Chunk>,
 }
 
 pub fn main() -> Result<(), String> {
@@ -34,6 +36,8 @@ pub fn main() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     sdl_context.mouse().show_cursor(false);
+
+    init_mixer();
 
     let mut canvas = window.into_canvas().build().map_err(|e| e.to_string())?;
     canvas.set_blend_mode(BlendMode::Blend);
@@ -90,6 +94,8 @@ pub fn main() -> Result<(), String> {
         game.update(command);
         render(&mut canvas, &game, &mut resources)?;
 
+        play_sounds(&mut game, &resources);
+
         let finished = SystemTime::now();
         let elapsed = finished.duration_since(started).unwrap();
         let frame_duration = Duration::new(0, 1_000_000_000u32 / FPS);
@@ -101,12 +107,28 @@ pub fn main() -> Result<(), String> {
     Ok(())
 }
 
+fn init_mixer() {
+    let chunk_size = 1_024;
+    mixer::open_audio(
+        mixer::DEFAULT_FREQUENCY,
+        mixer::DEFAULT_FORMAT,
+        mixer::DEFAULT_CHANNELS,
+        chunk_size,
+    )
+    .expect("cannot open audio");
+    let _mixer_context = mixer::init(
+        mixer::InitFlag::MP3 | mixer::InitFlag::FLAC | mixer::InitFlag::MOD | mixer::InitFlag::OGG,
+    )
+    .expect("cannot init mixer");
+}
+
 fn load_resources<'a>(
     texture_creator: &'a TextureCreator<WindowContext>,
     canvas: &mut Canvas<Window>,
 ) -> Resources<'a> {
     let mut resources = Resources {
         images: HashMap::new(),
+        chunks: HashMap::new(),
     };
 
     // create player texture
@@ -157,6 +179,15 @@ fn load_resources<'a>(
         };
         resources.images.insert(path.to_string(), image);
     }
+
+    let sound_paths = ["crash.wav", "hit.wav"];
+    for path in sound_paths {
+        let full_path = "resources/sound/".to_string() + path;
+        let chunk =
+            mixer::Chunk::from_file(full_path).expect(&format!("cannot load sound: {}", path));
+        resources.chunks.insert(path.to_string(), chunk);
+    }
+
     resources
 }
 
@@ -254,4 +285,12 @@ fn render_number(
         }
         x += digit_width_in_px;
     }
+}
+
+fn play_sounds(game: &mut Game, resources: &Resources) {
+    for sound_key in &game.requested_sounds {
+        let chunk = resources.chunks.get(&sound_key.to_string()).unwrap();
+        sdl2::mixer::Channel::all().play(&chunk, 0).unwrap();
+    }
+    game.requested_sounds = Vec::new();
 }

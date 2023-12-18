@@ -124,6 +124,7 @@ pub struct Game {
     pub score: i32,
     pub asteroids: Vec<Asteroid>,
     pub bullets: Vec<Bullet>,
+    pub requested_sounds: Vec<&'static str>,
 }
 
 impl Game {
@@ -143,6 +144,7 @@ impl Game {
             score: 0,
             asteroids: Vec::new(),
             bullets: Vec::new(),
+            requested_sounds: Vec::new(),
         };
 
         game
@@ -197,7 +199,8 @@ impl Game {
                 PLAYER_SIZE as f32,
                 PLAYER_SIZE as f32,
             ) {
-                self.is_over = true
+                self.is_over = true;
+                self.requested_sounds.push("crash.wav");
             }
         }
 
@@ -275,6 +278,7 @@ impl Game {
             should_remove: false,
         };
         self.bullets.push(bullet);
+        self.requested_sounds.push("hit.wav");
     }
 }
 
