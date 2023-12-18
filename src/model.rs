@@ -4,6 +4,7 @@ use std::time;
 
 pub const SCREEN_WIDTH: usize = 640;
 pub const SCREEN_HEIGHT: usize = 420;
+pub const PLAYER_SIZE: u32 = 20;
 
 pub enum Command {
     None,
@@ -24,8 +25,8 @@ pub struct Player {
 impl Player {
     pub fn new() -> Self {
         let player = Player {
-            x: (SCREEN_WIDTH / 2) as f32,
-            y: (SCREEN_HEIGHT / 2) as f32,
+            x: (SCREEN_WIDTH / 2 - PLAYER_SIZE as usize / 2) as f32,
+            y: (SCREEN_HEIGHT / 2 - PLAYER_SIZE as usize / 2) as f32,
             velocity: 0.0,
             rot: 90.0,
             vrot: 0.0,
@@ -128,7 +129,7 @@ impl Game {
             .as_secs();
         let rng = StdRng::seed_from_u64(timestamp);
 
-        let mut game = Game {
+        let game = Game {
             rng: rng,
             is_over: false,
             frame: 0,
@@ -159,8 +160,6 @@ impl Game {
         for asteroid in &mut self.asteroids {
             asteroid.do_move();
         }
-
-        // let v: Vec<Asteroid> = Vec::new();
 
         self.asteroids = self
             .asteroids
@@ -222,16 +221,6 @@ fn clamp<T: PartialOrd>(min: T, value: T, max: T) -> T {
         return min;
     }
     if value > max {
-        return max;
-    }
-    value
-}
-
-fn clamp_exclusive<T: PartialOrd>(min: T, value: T, max: T) -> T {
-    if value < min {
-        return min;
-    }
-    if value >= max {
         return max;
     }
     value

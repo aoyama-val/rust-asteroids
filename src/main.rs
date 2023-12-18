@@ -11,7 +11,6 @@ mod model;
 use crate::model::*;
 
 const FPS: u32 = 30;
-const PLAYER_SIZE: u32 = 20;
 
 struct Image<'a> {
     texture: Texture<'a>,
@@ -47,7 +46,10 @@ pub fn main() -> Result<(), String> {
     let mut game = Game::new();
 
     println!("Keys:");
-    println!("    Up : Move player up");
+    println!("    Up    : Move player forward");
+    println!("    Left  : Rotate player left");
+    println!("    Right : Rotate player right");
+    println!("    Shift : Shoot");
 
     'running: loop {
         let started = SystemTime::now();
@@ -164,8 +166,8 @@ fn render(
             &player_image.texture,
             None,
             Rect::new(
-                game.player.x as i32 - PLAYER_SIZE as i32 / 2,
-                game.player.y as i32 - PLAYER_SIZE as i32 / 2,
+                game.player.x as i32,
+                game.player.y as i32,
                 PLAYER_SIZE,
                 PLAYER_SIZE,
             ),
