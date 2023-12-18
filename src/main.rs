@@ -11,7 +11,7 @@ mod model;
 use crate::model::*;
 
 const FPS: u32 = 30;
-const PLAYER_SIZE: u32 = 40;
+const PLAYER_SIZE: u32 = 20;
 
 struct Image<'a> {
     texture: Texture<'a>,
@@ -110,10 +110,16 @@ fn load_resources<'a>(
     canvas
         .with_texture_canvas(&mut player_texture, |texture_canvas| {
             texture_canvas.clear();
-            texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+            texture_canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
             texture_canvas
-                .fill_rect(Rect::new(0, 0, PLAYER_SIZE, PLAYER_SIZE))
-                .expect("could not fill rect");
+                .draw_line(Point::new(9, 0), Point::new(2, 19))
+                .unwrap();
+            texture_canvas
+                .draw_line(Point::new(2, 19), Point::new(16, 19))
+                .unwrap();
+            texture_canvas
+                .draw_line(Point::new(16, 19), Point::new(9, 0))
+                .unwrap();
         })
         .unwrap();
     let q = player_texture.query();
