@@ -56,8 +56,8 @@ impl Player {
         self.x += self.velocity * f32::cos(deg2rad(self.rot));
         self.y += self.velocity * f32::sin(deg2rad(self.rot)) * -1.0;
 
-        self.x = min_eq_max(0.0, self.x, SCREEN_WIDTH as f32);
-        self.y = min_eq_max(0.0, self.y, SCREEN_WIDTH as f32);
+        self.x = min_max_loop(0.0, self.x, SCREEN_WIDTH as f32);
+        self.y = min_max_loop(0.0, self.y, SCREEN_WIDTH as f32);
 
         self.velocity *= 0.97;
 
@@ -297,7 +297,7 @@ pub fn deg2rad(degree: f32) -> f32 {
     (2.0 * PI) * degree / 360.0
 }
 
-pub fn min_eq_max<T: PartialOrd + num_traits::NumOps>(min: T, value: T, max: T) -> T {
+pub fn min_max_loop<T: PartialOrd + num_traits::NumOps>(min: T, value: T, max: T) -> T {
     if value < min {
         return value + max;
     }
