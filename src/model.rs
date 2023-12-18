@@ -19,7 +19,7 @@ pub struct Player {
     pub x: f32,
     pub y: f32,
     pub velocity: f32,
-    pub rot: f32, // 角度。数学と同じく、右向きが0で反時計回り。[0 - 360)度
+    pub rot: f32, // 角度。[0 - 360)度。x軸正の向きを0とし、x軸正の向きからy軸正の向きへの回転、つまり時計回りを正の向きと定義する。これによって数学と同じく x = r*cosθ, y = r*sinθになる。
     pub vrot: f32,
 }
 
@@ -29,7 +29,7 @@ impl Player {
             x: (SCREEN_WIDTH / 2 - PLAYER_SIZE as usize / 2) as f32,
             y: (SCREEN_HEIGHT / 2 - PLAYER_SIZE as usize / 2) as f32,
             velocity: 0.0,
-            rot: 90.0,
+            rot: 270.0,
             vrot: 0.0,
         };
         player
@@ -54,7 +54,7 @@ impl Player {
         }
 
         self.x += self.velocity * f32::cos(deg2rad(self.rot));
-        self.y += self.velocity * f32::sin(deg2rad(self.rot)) * -1.0;
+        self.y += self.velocity * f32::sin(deg2rad(self.rot));
 
         self.x = min_max_loop(0.0, self.x, SCREEN_WIDTH as f32);
         self.y = min_max_loop(0.0, self.y, SCREEN_WIDTH as f32);
@@ -157,8 +157,8 @@ impl Game {
 
         match command {
             Command::None => {}
-            Command::Left => self.player.rotate(5.0),
-            Command::Right => self.player.rotate(-5.0),
+            Command::Left => self.player.rotate(-5.0),
+            Command::Right => self.player.rotate(5.0),
             Command::Forward => self.player.up(),
             Command::Shoot => self.shoot(),
         }
@@ -231,7 +231,7 @@ impl Game {
         let v = 2.5 * self.rng.gen::<f32>() * 2.0;
         let rot = (self.rng.gen::<f32>()) * 360.0;
         let vx = v * f32::cos(rot);
-        let vy = v * f32::sin(rot) * -1.0;
+        let vy = v * f32::sin(rot);
 
         let x;
         let y;
@@ -270,7 +270,7 @@ impl Game {
         let v = 12.0;
         let rot = self.player.rot;
         let vx = v * f32::cos(deg2rad(rot));
-        let vy = v * f32::sin(deg2rad(rot)) * -1.0;
+        let vy = v * f32::sin(deg2rad(rot));
         let bullet = Bullet {
             x: self.player.x + PLAYER_SIZE as f32 / 2.0,
             y: self.player.y + PLAYER_SIZE as f32 / 2.0,
