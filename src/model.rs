@@ -17,7 +17,7 @@ pub struct Player {
     pub x: f32,
     pub y: f32,
     pub velocity: f32,
-    pub rot: f32,
+    pub rot: f32, // 角度。数学と同じく、右向きが0で反時計回り。[0 - 360)度
     pub vrot: f32,
 }
 
@@ -27,7 +27,7 @@ impl Player {
             x: (SCREEN_WIDTH / 2) as f32,
             y: (SCREEN_HEIGHT / 2) as f32,
             velocity: 0.0,
-            rot: 0.0,
+            rot: 90.0,
             vrot: 0.0,
         };
         player
@@ -51,8 +51,8 @@ impl Player {
             self.rot -= 360.0;
         }
 
-        self.x += self.velocity * f32::cos(deg2rad(self.rot - 90.0)) * -1.0;
-        self.y += self.velocity * f32::sin(deg2rad(self.rot - 90.0));
+        self.x += self.velocity * f32::cos(deg2rad(self.rot));
+        self.y += self.velocity * f32::sin(deg2rad(self.rot)) * -1.0;
         self.velocity *= 0.97;
 
         let rot_i32 = self.rot as i32;

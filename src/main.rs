@@ -169,7 +169,7 @@ fn render(
                 PLAYER_SIZE,
                 PLAYER_SIZE,
             ),
-            -1.0 * game.player.rot as f64, /* SDLのangleは時計回りが正 */
+            -1.0 * (game.player.rot - 90.0) as f64, /* SDLのangleは時計回りが正 */
             Point::new(PLAYER_SIZE as i32 / 2, PLAYER_SIZE as i32 / 2),
             false,
             false,
