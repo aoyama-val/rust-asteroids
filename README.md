@@ -2,6 +2,9 @@
 
 The asteroids game written in Rust.
 
+https://github.com/aoyama-val/rust-asteroids/assets/13144822/bed72b43-4edd-4ce8-9a6a-432123d56003
+
+
 ## Requirement
 
 - SDL 2
