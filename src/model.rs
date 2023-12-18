@@ -186,7 +186,7 @@ impl Game {
                     bullet.should_remove = true;
                     asteroid.should_remove = true;
                     self.score += 10;
-                    self.requested_sounds.push("hit.mp3");
+                    // self.requested_sounds.push("hit.mp3");
                 }
             }
 
@@ -279,7 +279,7 @@ impl Game {
             should_remove: false,
         };
         self.bullets.push(bullet);
-        self.requested_sounds.push("shoot.wav");
+        // self.requested_sounds.push("shoot.wav");
     }
 }
 

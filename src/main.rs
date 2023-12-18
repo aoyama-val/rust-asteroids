@@ -29,7 +29,7 @@ pub fn main() -> Result<(), String> {
 
     let video_subsystem = sdl_context.video()?;
     let window = video_subsystem
-        .window("rust-cave", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
+        .window("rust-asteroids", SCREEN_WIDTH as u32, SCREEN_HEIGHT as u32)
         .position_centered()
         .opengl()
         .build()
@@ -177,7 +177,7 @@ fn load_resources<'a>(
         resources.images.insert(path.to_string(), image);
     }
 
-    let sound_paths = ["crash.wav", "hit.mp3", "shoot.wav"];
+    let sound_paths = ["crash.wav"];
     for path in sound_paths {
         let full_path = "resources/sound/".to_string() + path;
         let chunk =
