@@ -40,7 +40,7 @@ pub fn main() -> Result<(), String> {
     canvas.set_blend_mode(BlendMode::Blend);
 
     let texture_creator = canvas.texture_creator();
-    let resources = load_resources(&texture_creator);
+    let mut resources = load_resources(&texture_creator, &mut canvas);
 
     let mut event_pump = sdl_context.event_pump()?;
 
@@ -77,7 +77,7 @@ pub fn main() -> Result<(), String> {
             }
         }
         game.update(command);
-        render(&mut canvas, &game, &resources)?;
+        render(&mut canvas, &game, &mut resources)?;
 
         let finished = SystemTime::now();
         let elapsed = finished.duration_since(started).unwrap();
@@ -90,12 +90,39 @@ pub fn main() -> Result<(), String> {
     Ok(())
 }
 
-fn load_resources<'a>(texture_creator: &'a TextureCreator<WindowContext>) -> Resources {
+fn load_resources<'a>(
+    texture_creator: &'a TextureCreator<WindowContext>,
+    canvas: &mut Canvas<Window>,
+) -> Resources<'a> {
     let mut resources = Resources {
         images: HashMap::new(),
     };
 
-    // let surface = sdl2::surface::Surface::new(10, 10, sdl2::pixels::PixelFormatEnum::RGB24);
+    // create player texture
+    let mut player_texture = texture_creator
+        .create_texture(
+            None,
+            sdl2::render::TextureAccess::Target,
+            PLAYER_SIZE,
+            PLAYER_SIZE,
+        )
+        .unwrap();
+    canvas
+        .with_texture_canvas(&mut player_texture, |texture_canvas| {
+            texture_canvas.clear();
+            texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
+            texture_canvas
+                .fill_rect(Rect::new(0, 0, PLAYER_SIZE, PLAYER_SIZE))
+                .expect("could not fill rect");
+        })
+        .unwrap();
+    let q = player_texture.query();
+    let player_image = Image {
+        texture: player_texture,
+        w: q.width,
+        h: q.height,
+    };
+    resources.images.insert("player".to_string(), player_image);
 
     let image_paths = ["numbers.bmp"];
     for path in image_paths {
@@ -116,37 +143,19 @@ fn load_resources<'a>(texture_creator: &'a TextureCreator<WindowContext>) -> Res
     resources
 }
 
-fn render(canvas: &mut Canvas<Window>, game: &Game, resources: &Resources) -> Result<(), String> {
+fn render(
+    canvas: &mut Canvas<Window>,
+    game: &Game,
+    resources: &mut Resources,
+) -> Result<(), String> {
     canvas.set_draw_color(Color::RGB(0, 0, 0));
     canvas.clear();
 
     // render player
-    // canvas.set_draw_color(Color::RGB(238, 130, 238));
-    // canvas.fill_rect(Rect::new(
-    //     game.player.x as i32,
-    //     game.player.y as i32,
-    //     PLAYER_SIZE,
-    //     PLAYER_SIZE,
-    // ))?;
-
-    let creator = canvas.texture_creator();
-    let mut texture = creator
-        .create_texture(None, sdl2::render::TextureAccess::Target, 40, 40)
-        .unwrap();
-
-    canvas
-        .with_texture_canvas(&mut texture, |texture_canvas| {
-            texture_canvas.clear();
-            texture_canvas.set_draw_color(Color::RGBA(255, 0, 0, 255));
-            texture_canvas
-                .fill_rect(Rect::new(0, 0, PLAYER_SIZE, PLAYER_SIZE))
-                .expect("could not fill rect");
-        })
-        .map_err(|e| e.to_string())?;
-
+    let player_image = resources.images.get_mut("player").unwrap();
     canvas
         .copy_ex(
-            &texture,
+            &player_image.texture,
             None,
             Rect::new(
                 game.player.x as i32 - PLAYER_SIZE as i32 / 2,
