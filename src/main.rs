@@ -50,6 +50,7 @@ pub fn main() -> Result<(), String> {
     println!("    Left  : Rotate player left");
     println!("    Right : Rotate player right");
     println!("    Shift : Shoot");
+    println!("    Space : Restart when game over");
 
     'running: loop {
         let started = SystemTime::now();
@@ -62,6 +63,14 @@ pub fn main() -> Result<(), String> {
                     keycode: Some(Keycode::Escape),
                     ..
                 } => break 'running,
+                Event::KeyDown {
+                    keycode: Some(Keycode::Space),
+                    ..
+                } => {
+                    if game.is_over {
+                        game = Game::new();
+                    }
+                }
                 Event::KeyDown {
                     keycode: Some(code),
                     ..
