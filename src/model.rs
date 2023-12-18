@@ -1,4 +1,5 @@
 use rand::prelude::*;
+use std::f32::consts::PI;
 use std::time;
 
 pub const SCREEN_WIDTH: usize = 640;
@@ -15,8 +16,7 @@ pub enum Command {
 pub struct Player {
     pub x: f32,
     pub y: f32,
-    pub vx: f32,
-    pub vy: f32,
+    pub velocity: f32,
     pub rot: f32,
     pub vrot: f32,
 }
@@ -26,8 +26,7 @@ impl Player {
         let player = Player {
             x: (SCREEN_WIDTH / 2) as f32,
             y: (SCREEN_HEIGHT / 2) as f32,
-            vx: 0.0,
-            vy: 0.0,
+            velocity: 0.0,
             rot: 0.0,
             vrot: 0.0,
         };
@@ -35,17 +34,32 @@ impl Player {
     }
 
     pub fn up(&mut self) {
-        self.vy -= 1.8;
+        self.velocity = 1.0;
     }
 
     pub fn rotate(&mut self, degree: f32) {
-        // self.rot = clamp_exclusive(0.0, self.rot + degree, 360.0);
-        self.rot += degree;
+        self.vrot = degree;
+    }
+
+    pub fn do_move(&mut self) {
+        let prev_rot_i32 = self.rot as i32;
+        self.rot += self.vrot;
         if self.rot < 0.0 {
             self.rot += 360.0;
         }
         if self.rot >= 360.0 {
             self.rot -= 360.0;
+        }
+
+        self.x += self.velocity * f32::cos(deg2rad(self.rot - 90.0)) * -1.0;
+        self.y += self.velocity * f32::sin(deg2rad(self.rot - 90.0));
+        self.velocity *= 0.97;
+
+        let rot_i32 = self.rot as i32;
+        if rot_i32 == prev_rot_i32 {
+            self.vrot = 0.0;
+        } else {
+            self.vrot *= 0.97;
         }
     }
 }
@@ -85,11 +99,13 @@ impl Game {
 
         match command {
             Command::None => {}
-            Command::Left => self.player.rotate(10.0),
-            Command::Right => self.player.rotate(-10.0),
+            Command::Left => self.player.rotate(5.0),
+            Command::Right => self.player.rotate(-5.0),
             Command::Forward => self.player.up(),
             Command::Shoot => {}
         }
+
+        self.player.do_move();
 
         self.frame += 1;
     }
@@ -113,4 +129,8 @@ fn clamp_exclusive<T: PartialOrd>(min: T, value: T, max: T) -> T {
         return max;
     }
     value
+}
+
+pub fn deg2rad(degree: f32) -> f32 {
+    (2.0 * PI) * degree / 360.0
 }
