@@ -185,7 +185,7 @@ impl Game {
                 ) {
                     bullet.should_remove = true;
                     asteroid.should_remove = true;
-                    self.score += 10;
+                    self.score += 100;
                     // self.requested_sounds.push("hit.mp3");
                 }
             }
