@@ -278,7 +278,7 @@ impl Game {
             should_remove: false,
         };
         self.bullets.push(bullet);
-        self.requested_sounds.push("hit.wav");
+        self.requested_sounds.push("shoot.wav");
     }
 }
 
