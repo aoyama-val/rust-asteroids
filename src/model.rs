@@ -159,6 +159,18 @@ impl Game {
 
         for asteroid in &mut self.asteroids {
             asteroid.do_move();
+            if is_collide(
+                asteroid.x,
+                asteroid.y,
+                asteroid.size,
+                asteroid.size,
+                self.player.x,
+                self.player.y,
+                PLAYER_SIZE as f32,
+                PLAYER_SIZE as f32,
+            ) {
+                self.is_over = true
+            }
         }
 
         self.asteroids = self
@@ -238,4 +250,8 @@ pub fn min_eq_max<T: PartialOrd + num_traits::NumOps>(min: T, value: T, max: T) 
         return value - max;
     }
     value
+}
+
+pub fn is_collide(x1: f32, y1: f32, w1: f32, h1: f32, x2: f32, y2: f32, w2: f32, h2: f32) -> bool {
+    return (x1 <= x2 + w2 && x2 <= x1 + w1) && (y1 <= y2 + h2 && y2 <= y1 + h1);
 }
