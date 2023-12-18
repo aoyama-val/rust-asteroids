@@ -1,6 +1,6 @@
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
-use sdl2::pixels::{Color, PixelFormat, PixelFormatEnum};
+use sdl2::pixels::Color;
 use sdl2::rect::{Point, Rect};
 use sdl2::render::{BlendMode, Canvas, Texture, TextureCreator};
 use sdl2::video::{Window, WindowContext};
@@ -188,6 +188,10 @@ fn render(
         .unwrap();
 
     // render bullets
+    canvas.set_draw_color(Color::RGB(255, 255, 0));
+    for bullet in &game.bullets {
+        canvas.draw_rect(Rect::new(bullet.x as i32, bullet.y as i32, 5, 5))?;
+    }
 
     // render asteroids
     canvas.set_draw_color(Color::RGB(255, 255, 255));
@@ -197,7 +201,7 @@ fn render(
             asteroid.y as i32,
             asteroid.size as u32,
             asteroid.size as u32,
-        ));
+        ))?;
     }
 
     if game.is_over {

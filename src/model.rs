@@ -86,15 +86,14 @@ impl Asteroid {
         self.y += self.vy;
         if self.x < 0.0 || self.x > SCREEN_WIDTH as f32 {
             self.should_remove = true;
-            println!("should_remove 1");
         }
         if self.y < 0.0 || self.y > SCREEN_HEIGHT as f32 {
             self.should_remove = true;
-            println!("should_remove 2");
         }
     }
 }
 
+#[derive(Clone)]
 pub struct Bullet {
     pub x: f32,
     pub y: f32,
@@ -107,6 +106,12 @@ impl Bullet {
     pub fn do_move(&mut self) {
         self.x += self.vx;
         self.y += self.vy;
+        if self.x < 0.0 || self.x > SCREEN_WIDTH as f32 {
+            self.should_remove = true;
+        }
+        if self.y < 0.0 || self.y > SCREEN_HEIGHT as f32 {
+            self.should_remove = true;
+        }
     }
 }
 
@@ -152,10 +157,14 @@ impl Game {
             Command::Left => self.player.rotate(5.0),
             Command::Right => self.player.rotate(-5.0),
             Command::Forward => self.player.up(),
-            Command::Shoot => {}
+            Command::Shoot => self.shoot(),
         }
 
         self.player.do_move();
+
+        for bullet in &mut self.bullets {
+            bullet.do_move();
+        }
 
         for asteroid in &mut self.asteroids {
             asteroid.do_move();
@@ -172,6 +181,13 @@ impl Game {
                 self.is_over = true
             }
         }
+
+        self.bullets = self
+            .bullets
+            .iter()
+            .filter(|a| !a.should_remove)
+            .map(|a| (*a).clone())
+            .collect();
 
         self.asteroids = self
             .asteroids
@@ -225,6 +241,21 @@ impl Game {
             rot, asteroid.x, asteroid.y, asteroid.vx, asteroid.vy
         );
         self.asteroids.push(asteroid);
+    }
+
+    pub fn shoot(&mut self) {
+        let v = 4.0;
+        let rot = self.player.rot;
+        let vx = v * f32::cos(deg2rad(rot));
+        let vy = v * f32::sin(deg2rad(rot)) * -1.0;
+        let bullet = Bullet {
+            x: self.player.x + PLAYER_SIZE as f32 / 2.0,
+            y: self.player.y + PLAYER_SIZE as f32 / 2.0,
+            vx: vx,
+            vy: vy,
+            should_remove: false,
+        };
+        self.bullets.push(bullet);
     }
 }
 
