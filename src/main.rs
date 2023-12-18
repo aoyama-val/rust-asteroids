@@ -190,7 +190,12 @@ fn render(
     // render bullets
     canvas.set_draw_color(Color::RGB(255, 255, 0));
     for bullet in &game.bullets {
-        canvas.draw_rect(Rect::new(bullet.x as i32, bullet.y as i32, 5, 5))?;
+        canvas.draw_rect(Rect::new(
+            bullet.x as i32,
+            bullet.y as i32,
+            BULLET_SIZE,
+            BULLET_SIZE,
+        ))?;
     }
 
     // render asteroids

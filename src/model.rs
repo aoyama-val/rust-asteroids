@@ -5,6 +5,7 @@ use std::time;
 pub const SCREEN_WIDTH: usize = 640;
 pub const SCREEN_HEIGHT: usize = 420;
 pub const PLAYER_SIZE: u32 = 20;
+pub const BULLET_SIZE: u32 = 5;
 
 pub enum Command {
     None,
@@ -168,6 +169,24 @@ impl Game {
 
         for asteroid in &mut self.asteroids {
             asteroid.do_move();
+
+            for bullet in &mut self.bullets {
+                if is_collide(
+                    bullet.x,
+                    bullet.y,
+                    BULLET_SIZE as f32,
+                    BULLET_SIZE as f32,
+                    asteroid.x,
+                    asteroid.y,
+                    asteroid.size,
+                    asteroid.size,
+                ) {
+                    bullet.should_remove = true;
+                    asteroid.should_remove = true;
+                    self.score += 10;
+                }
+            }
+
             if is_collide(
                 asteroid.x,
                 asteroid.y,
@@ -236,14 +255,14 @@ impl Game {
             vy: vy,
             should_remove: false,
         };
-        println!(
-            "rot = {},  x = {}, y = {}, vx = {}, vy = {}",
-            rot, asteroid.x, asteroid.y, asteroid.vx, asteroid.vy
-        );
         self.asteroids.push(asteroid);
     }
 
     pub fn shoot(&mut self) {
+        if self.bullets.len() >= 3 {
+            return;
+        }
+
         let v = 4.0;
         let rot = self.player.rot;
         let vx = v * f32::cos(deg2rad(rot));
