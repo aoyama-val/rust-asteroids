@@ -219,7 +219,7 @@ impl Game {
             .map(|a| (*a).clone())
             .collect();
 
-        if self.frame % 30 == 0 && self.asteroids.len() < 30 {
+        if self.rng.gen_bool(0.07) && self.asteroids.len() < 30 {
             self.spawn_asteroid();
         }
 
