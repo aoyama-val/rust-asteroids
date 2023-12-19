@@ -139,7 +139,6 @@ fn load_resources<'a>(
         .unwrap();
     canvas
         .with_texture_canvas(&mut player_texture, |texture_canvas| {
-            texture_canvas.clear();
             texture_canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
             texture_canvas
                 .draw_line(Point::new(9, 0), Point::new(2, 19))
@@ -172,7 +171,6 @@ fn load_resources<'a>(
         .unwrap();
     canvas
         .with_texture_canvas(&mut asteroid_texture, |texture_canvas| {
-            texture_canvas.clear();
             texture_canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
             texture_canvas
                 .draw_rect(Rect::new(
