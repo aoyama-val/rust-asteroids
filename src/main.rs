@@ -19,6 +19,18 @@ struct Image<'a> {
     h: u32,
 }
 
+impl<'a> Image<'a> {
+    fn new(texture: Texture<'a>) -> Self {
+        let q = texture.query();
+        let image = Image {
+            texture,
+            w: q.width,
+            h: q.height,
+        };
+        image
+    }
+}
+
 struct Resources<'a> {
     images: HashMap<String, Image<'a>>,
     chunks: HashMap<String, sdl2::mixer::Chunk>,
@@ -151,12 +163,7 @@ fn load_resources<'a>(
                 .unwrap();
         })
         .unwrap();
-    let q = player_texture.query();
-    let player_image = Image {
-        texture: player_texture,
-        w: q.width,
-        h: q.height,
-    };
+    let player_image = Image::new(player_texture);
     resources.images.insert("player".to_string(), player_image);
 
     // create asteroid texture
@@ -182,12 +189,7 @@ fn load_resources<'a>(
                 .unwrap();
         })
         .unwrap();
-    let q = asteroid_texture.query();
-    let asteroid_image = Image {
-        texture: asteroid_texture,
-        w: q.width,
-        h: q.height,
-    };
+    let asteroid_image = Image::new(asteroid_texture);
     resources
         .images
         .insert("asteroid".to_string(), asteroid_image);
@@ -200,12 +202,7 @@ fn load_resources<'a>(
             .create_texture_from_surface(&temp_surface)
             .expect(&format!("cannot load image: {}", path));
 
-        let q = texture.query();
-        let image: Image = Image {
-            texture: texture,
-            w: q.width,
-            h: q.height,
-        };
+        let image = Image::new(texture);
         resources.images.insert(path.to_string(), image);
     }
 
