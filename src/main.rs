@@ -160,6 +160,40 @@ fn load_resources<'a>(
     };
     resources.images.insert("player".to_string(), player_image);
 
+    // create asteroid texture
+    let asteroid_texture_size = 20;
+    let mut asteroid_texture = texture_creator
+        .create_texture(
+            None,
+            sdl2::render::TextureAccess::Target,
+            asteroid_texture_size,
+            asteroid_texture_size,
+        )
+        .unwrap();
+    canvas
+        .with_texture_canvas(&mut asteroid_texture, |texture_canvas| {
+            texture_canvas.clear();
+            texture_canvas.set_draw_color(Color::RGBA(255, 255, 255, 255));
+            texture_canvas
+                .draw_rect(Rect::new(
+                    0,
+                    0,
+                    asteroid_texture_size,
+                    asteroid_texture_size,
+                ))
+                .unwrap();
+        })
+        .unwrap();
+    let q = asteroid_texture.query();
+    let asteroid_image = Image {
+        texture: asteroid_texture,
+        w: q.width,
+        h: q.height,
+    };
+    resources
+        .images
+        .insert("asteroid".to_string(), asteroid_image);
+
     let image_paths = ["numbers.bmp"];
     for path in image_paths {
         let full_path = "resources/image/".to_string() + path;
@@ -227,14 +261,24 @@ fn render(
     }
 
     // render asteroids
-    canvas.set_draw_color(Color::RGB(255, 255, 255));
+    let asteroid_image = resources.images.get_mut("asteroid").unwrap();
     for asteroid in &game.asteroids {
-        canvas.draw_rect(Rect::new(
-            asteroid.x as i32,
-            asteroid.y as i32,
-            asteroid.size as u32,
-            asteroid.size as u32,
-        ))?;
+        canvas
+            .copy_ex(
+                &asteroid_image.texture,
+                None,
+                Rect::new(
+                    asteroid.x as i32,
+                    asteroid.y as i32,
+                    asteroid.size as u32,
+                    asteroid.size as u32,
+                ),
+                (asteroid.rot + 90.0) as f64, /* SDLのangleは時計回りが正 */
+                Point::new(asteroid.size as i32 / 2, asteroid.size as i32 / 2),
+                false,
+                false,
+            )
+            .unwrap();
     }
 
     if game.is_over {

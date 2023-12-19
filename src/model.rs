@@ -78,6 +78,8 @@ pub struct Asteroid {
     pub vx: f32,
     pub vy: f32,
     pub size: f32,
+    pub rot: f32,
+    pub vrot: f32,
     pub should_remove: bool,
 }
 
@@ -91,6 +93,7 @@ impl Asteroid {
         if self.y < 0.0 || self.y > SCREEN_HEIGHT as f32 {
             self.should_remove = true;
         }
+        self.rot += self.vrot;
     }
 }
 
@@ -257,6 +260,8 @@ impl Game {
             size: size,
             vx: vx,
             vy: vy,
+            rot: 0.0,
+            vrot: self.rng.gen::<f32>() * 0.5,
             should_remove: false,
         };
         self.asteroids.push(asteroid);
