@@ -261,7 +261,7 @@ impl Game {
             vx: vx,
             vy: vy,
             rot: 0.0,
-            vrot: self.rng.gen::<f32>() * 0.5,
+            vrot: -0.5 + self.rng.gen::<f32>(),
             should_remove: false,
         };
         self.asteroids.push(asteroid);
